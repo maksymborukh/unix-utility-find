@@ -13,7 +13,7 @@ namespace find_utility
         private Cd cd;
         private string HomeDirectoryName;
         private string DirectoryName;
-        
+        private List<string> attributes = new List<string>();
 
         public Command()
         {
@@ -38,6 +38,10 @@ namespace find_utility
             string[] utility = c.Split(' ');
             string command = utility[0];
 
+            attributes.Equals(utility);
+            if (attributes.Count != 0)
+                attributes.RemoveAt(0);
+
             RecognizeCommand(command);
         }
 
@@ -46,6 +50,7 @@ namespace find_utility
             switch (command)
             {
                 case "find":
+                    find.ExecuteCommand(HomeDirectoryName, attributes);
                     break;
                 default:
                     Console.WriteLine("'" + command + "' is not recognized as an internal or external command, operable program or batch file.");
