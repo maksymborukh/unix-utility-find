@@ -38,7 +38,7 @@ namespace find_utility
             string[] utility = c.Split(' ');
             string command = utility[0];
 
-            attributes.Equals(utility);
+            attributes = utility.ToList();
             if (attributes.Count != 0)
                 attributes.RemoveAt(0);
 
@@ -50,6 +50,7 @@ namespace find_utility
             switch (command)
             {
                 case "find":
+                    find = new Find();
                     find.ExecuteCommand(HomeDirectoryName, attributes);
                     break;
                 default:

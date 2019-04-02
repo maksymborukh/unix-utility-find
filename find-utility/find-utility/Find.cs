@@ -11,37 +11,66 @@ namespace find_utility
     {
         private List<string> folders = new List<string>();
 
+        private int maxDepth = -1;
+
         public void ExecuteCommand(string directory, List<string> attributes)
         {
-            //string[] files = (Directory.GetFiles(directory));
-            //folders = Directory.GetDirectories(directory, "*", SearchOption.AllDirectories).ToList();
+            
+            Attribute(attributes);
 
-            AllDirectories(directory);
+            AllDirectories(directory, 0, maxDepth);
+            folders.Add(directory);
 
             foreach (string folder in folders)
             {
-                //Console.WriteLine(subDir);
-                string[] files = (Directory.GetFiles(folder));
-                foreach (string file in files)
-                {
-                    Console.WriteLine(file);
-                }
-            }
-            
-        }
-
-        private void AllDirectories(string path)
-        {
-            foreach (string folder in Directory.GetDirectories(path))
-            {
                 try
                 {
-                    AllDirectories(folder);
-                    folders.Add(folder);
+                    string[] files = (Directory.GetFiles(folder));
+                    foreach (string file in files)
+                    {
+                        Console.WriteLine(file);
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    
+                    Console.WriteLine(folder + ": Access denied");
+                }
+            }
+            Console.WriteLine();
+
+        }
+
+        private void AllDirectories(string path, int indent, int depth)
+        {
+            if ((depth == -1 ) || (depth != indent))
+            {
+                try
+                {
+                    if ((File.GetAttributes(path) & FileAttributes.ReparsePoint)
+                            != FileAttributes.ReparsePoint)
+                    {
+                        foreach (string folder in Directory.GetDirectories(path))
+                        {
+                            folders.Add(folder);
+                            AllDirectories(folder, indent + 1, depth);
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+
+                }
+            }
+        }
+
+        private void Attribute(List<string> attributes)
+        {
+            if (attributes.Contains("-maxdepth"))
+            {
+                bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-maxdepth") + 1), out maxDepth);
+                if (!success)
+                {
+                    Console.WriteLine("find: known argument.");
                 }
             }
         }
