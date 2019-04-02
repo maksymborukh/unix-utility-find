@@ -10,33 +10,35 @@ namespace find_utility
     class Find
     {
         private List<string> folders = new List<string>();
-
+        private bool error = false;
         private int maxDepth = -1;
 
         public void ExecuteCommand(string directory, List<string> attributes)
         {
             
             Attribute(attributes);
-
-            AllDirectories(directory, 0, maxDepth);
-            folders.Add(directory);
-
-            foreach (string folder in folders)
+            if (!error)
             {
-                try
+                AllDirectories(directory, 0, maxDepth);
+                folders.Add(directory);
+
+                foreach (string folder in folders)
                 {
-                    string[] files = (Directory.GetFiles(folder));
-                    foreach (string file in files)
+                    try
                     {
-                        Console.WriteLine(file);
+                        string[] files = (Directory.GetFiles(folder));
+                        foreach (string file in files)
+                        {
+                            Console.WriteLine(file);
+                        }
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        Console.WriteLine(folder + ": Access denied");
                     }
                 }
-                catch (UnauthorizedAccessException)
-                {
-                    Console.WriteLine(folder + ": Access denied");
-                }
+                Console.WriteLine();
             }
-            Console.WriteLine();
 
         }
 
@@ -71,6 +73,11 @@ namespace find_utility
                 if (!success)
                 {
                     Console.WriteLine("find: known argument.");
+                    error = true;
+                }
+                if (maxDepth < 0)
+                {
+                    maxDepth = -1;
                 }
             }
         }
