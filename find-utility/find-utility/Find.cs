@@ -11,6 +11,7 @@ namespace find_utility
     {
         private List<string> folders = new List<string>();
         private bool error = false;
+        private bool attError = false;
         private int maxDepth = -1;
         private string name = "*";
 
@@ -18,7 +19,7 @@ namespace find_utility
         {
             
             Attribute(attributes);
-            if (!error)
+            if (!error && !attError)
             {
                 AllDirectories(directory, 0, maxDepth);
                 folders.Add(directory);
@@ -27,7 +28,7 @@ namespace find_utility
                 {
                     try
                     {
-                        string[] files = (Directory.GetFiles(folder));
+                        string[] files = (Directory.GetFiles(folder, name));
                         foreach (string file in files)
                         {
                             Console.WriteLine(file);
@@ -35,7 +36,7 @@ namespace find_utility
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        Console.WriteLine(folder + ": Access denied");
+                        Console.WriteLine(folder + ": Permission denied");
                     }
                 }
                 Console.WriteLine();
@@ -68,33 +69,53 @@ namespace find_utility
 
         private void Attribute(List<string> attributes)
         {
+            int attCount = 0;
             if (attributes.Contains("-maxdepth"))
             {
-                bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-maxdepth") + 1), out maxDepth);
-                if (!success)
+                try
                 {
-                    Console.WriteLine("find: unknown argument.");
-                    error = true;
+                    bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-maxdepth") + 1), out maxDepth);
+                    attCount = attCount + 1;
+                    if (!success)
+                    {
+                        Console.WriteLine("find: unknown argument.");
+                        error = true;
+                    }
+                    if (maxDepth < 0)
+                    {
+                        maxDepth = -1;
+                    }
                 }
-                if (maxDepth < 0)
+                catch
                 {
-                    maxDepth = -1;
+                    Console.WriteLine("find: argument incorrect.");
                 }
 
             }
             if(attributes.Contains("-name"))
             {
-                bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-name") + 1), out maxDepth);
-                if (!success)
+                try
                 {
-                    Console.WriteLine("find: unknown argument.");
+                    string parse;
+                    parse = attributes.ElementAt(attributes.IndexOf("-name") + 1);
+                    parse = parse.Substring(1, parse.Length - 2);
+                    //parse = parse + '"';
+                    name = parse;
+                    attCount = attCount + 1;
+                }
+                catch
+                {
+                    Console.WriteLine("find: argument incorrect.");
                     error = true;
                 }
-                if (maxDepth < 0)
+            }
+            if (attributes.Count != 0)
+            {
+                if (attCount != attributes.Count / 2)
                 {
-                    maxDepth = -1;
+                    attError = true;
+                    Console.WriteLine("find: argument incorrect.");
                 }
-                name = attributes.ElementAt(attributes.IndexOf("-name"));
             }
         }
 
