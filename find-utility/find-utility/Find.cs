@@ -12,6 +12,7 @@ namespace find_utility
         private List<string> folders = new List<string>();
         private bool error = false;
         private int maxDepth = -1;
+        private string name = "*";
 
         public void ExecuteCommand(string directory, List<string> attributes)
         {
@@ -79,6 +80,21 @@ namespace find_utility
                 {
                     maxDepth = -1;
                 }
+
+            }
+            if(attributes.Contains("-name"))
+            {
+                bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-name") + 1), out maxDepth);
+                if (!success)
+                {
+                    Console.WriteLine("find: unknown argument.");
+                    error = true;
+                }
+                if (maxDepth < 0)
+                {
+                    maxDepth = -1;
+                }
+                name = attributes.ElementAt(attributes.IndexOf("-name"));
             }
         }
 
