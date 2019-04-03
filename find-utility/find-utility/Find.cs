@@ -72,7 +72,7 @@ namespace find_utility
                 bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-maxdepth") + 1), out maxDepth);
                 if (!success)
                 {
-                    Console.WriteLine("find: known argument.");
+                    Console.WriteLine("find: unknown argument.");
                     error = true;
                 }
                 if (maxDepth < 0)
