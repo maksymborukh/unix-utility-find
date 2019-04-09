@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace find_utility
 {
-    class Program
+    class Cd
     {
-        static void Main(string[] args)
-        {
-            Command command = new Command();
-            command.ReadCommand();
-        }
     }
 }
