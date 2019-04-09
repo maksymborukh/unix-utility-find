@@ -13,13 +13,14 @@ namespace find_utility
         private bool error = false;
         private bool attError = false;
         private int maxDepth = -1;
+        private bool help = false;
         private string name = "*";
 
         public void ExecuteCommand(string directory, List<string> attributes)
         {
             
             Attribute(attributes);
-            if (!error && !attError)
+            if (!error && !attError && !help)
             {
                 AllDirectories(directory, 0, maxDepth);
                 folders.Add(directory);
@@ -75,7 +76,7 @@ namespace find_utility
                 try
                 {
                     bool success = Int32.TryParse(attributes.ElementAt(attributes.IndexOf("-maxdepth") + 1), out maxDepth);
-                    attCount = attCount + 1;
+                    attCount = attCount + 2;
                     if (!success)
                     {
                         Console.WriteLine("find: unknown argument.");
@@ -99,9 +100,8 @@ namespace find_utility
                     string parse;
                     parse = attributes.ElementAt(attributes.IndexOf("-name") + 1);
                     parse = parse.Substring(1, parse.Length - 2);
-                    //parse = parse + '"';
                     name = parse;
-                    attCount = attCount + 1;
+                    attCount = attCount + 2;
                 }
                 catch
                 {
@@ -109,9 +109,17 @@ namespace find_utility
                     error = true;
                 }
             }
+
+            if (attributes.Contains("-help"))
+            {
+                Console.WriteLine("find: -maxdepth number, -name 'name', -help.");
+                attCount = attCount + 1;
+                help = true;
+            }
+
             if (attributes.Count != 0)
             {
-                if (attCount != attributes.Count / 2)
+                if (attCount != attributes.Count)
                 {
                     attError = true;
                     Console.WriteLine("find: argument incorrect.");
